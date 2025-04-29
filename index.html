@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WYSTERIA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #000000 0%, #2c0637 100%);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .phrase-container {
+            position: relative;
+            height: 150px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .phrase {
+            opacity: 0;
+            font-size: 2rem;
+            position: absolute;
+            width: 90%;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(173, 127, 212, 0.6);
+            display: none;
+            transform: translateY(20px);
+        }
+        
+        .phrase.entering {
+            display: block;
+            animation: phraseEnter 2s forwards;
+        }
+        
+        .phrase.exiting {
+            display: block;
+            animation: phraseExit 2s forwards;
+        }
+        
+        @keyframes phraseEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        
+        @keyframes phraseExit {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+                filter: blur(5px);
+            }
+        }
+        
+        .cover-container {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease;
+            display: none;
+        }
+        
+        .cover-container.visible {
+            display: flex;
+            animation: revealCover 3s forwards;
+        }
+        
+        @keyframes revealCover {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.8);
+                filter: blur(10px) brightness(0);
+            }
+            30% {
+                filter: blur(5px) brightness(0.2);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0) brightness(1);
+            }
+        }
+        
+        .cover {
+            max-width: 80%;
+            max-height: 70vh;
+            box-shadow: 0 0 30px rgba(173, 127, 212, 0.8);
+            border-radius: 5px;
+            animation: glowPulse 3s infinite alternate;
+        }
+        
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 20px rgba(173, 127, 212, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 40px rgba(173, 127, 212, 0.9);
+            }
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #d4af37 0%, #f5f5f5 50%, #d4af37 100%);
+            color: #000;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            opacity: 0;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .button.visible {
+            animation: revealButton 1.5s forwards;
+            animation-delay: 2s;
+        }
+        
+        @keyframes revealButton {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+        }
+        
+        .button:active {
+            transform: scale(0.98);
+        }
+        
+        .wattpad-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        
+        .flower {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-image: radial-gradient(circle, #ad7fd4 10%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.6;
+            z-index: 1;
+            animation: fall linear forwards;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-5vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Efectos especiales para la revelación */
+        .reveal-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .reveal-effect.active {
+            animation: flashReveal 3s forwards;
+        }
+        
+        @keyframes flashReveal {
+            0% {
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        
+        /* Partículas extras para el momento del reveal */
+        .special-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #ad7fd4;
+            border-radius: 50%;
+            z-index: 3;
+            opacity: 0;
+        }
+        
+        @keyframes particleExplode {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(30);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="phrase-container">
+            <div class="phrase" id="phrase1">Dicen que estoy loca...</div>
+            <div class="phrase" id="phrase2">Pero ellos nunca escucharon lo que yo escuché.</div>
+            <div class="phrase" id="phrase3">Las voces no mienten... solo insisten.</div>
+            <div class="phrase" id="phrase4">Julian... tú eras el único que me hacía callar las sombras.</div>
+            <div class="phrase" id="phrase5">Hasta que sonreíste con otra.</div>
+            <div class="phrase" id="phrase6">No fue mi culpa... fue el cuchillo.</div>
+            <div class="phrase" id="phrase7">¿Sabes lo que duele más que matar?</div>
+            <div class="phrase" id="phrase8">Sobrevivir a uno mismo.</div>
+            <div class="phrase" id="phrase9">La sangre huele a flores.</div>
+            <div class="phrase" id="phrase10">Y las flores huelen a Wysteria.</div>
+            <div class="phrase" id="phrase11">Estoy sola. Estoy viva. Estoy lista.</div>
+            <div class="phrase" id="phrase12">Esta es la historia de Lucía Buendía…<br>y nadie saldrá ileso.</div>
+        </div>
+        
+        <div class="cover-container" id="coverContainer">
+            <img class="cover" id="cover" src="/api/placeholder/400/600" alt="Portada de Wysteria" />
+            <a href="#" class="button" id="readButton">
+                LEER AHORA EN WATTPAD
+                <svg class="wattpad-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M496 256c0 136.9-111.1 248-248 248S0 392.9 0 256 111.1 8 248 8s248 111.1 248 248zm-248 50c-25.4 0-46 20.6-46 46s20.6 46 46 46 46-20.6 46-46-20.6-46-46-46zm-43.7-165.8l7.5 136c.3 6.4 5.6 11.5 12 11.5h48.5c6.4 0 11.6-5.1 12-11.5l7.5-136c.4-6.9-5.1-12.7-12-12.7h-63.5c-6.9 0-12.4 5.8-12 12.7z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Efecto para el reveal -->
+    <div class="reveal-effect" id="revealEffect"></div>
+    
+    <!-- Audio element (oculto) -->
+    <audio id="revealSound">
+        <!-- El usuario añadirá el archivo de audio después -->
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear flores cayendo
+            function createFlowers() {
+                const flowerCount = 30;
+                const container = document.body;
+                
+                for (let i = 0; i < flowerCount; i++) {
+                    setTimeout(() => {
+                        const flower = document.createElement('div');
+                        flower.classList.add('flower');
+                        
+                        // Tamaño aleatorio
+                        const size = Math.random() * 20 + 10;
+                        flower.style.width = `${size}px`;
+                        flower.style.height = `${size}px`;
+                        
+                        // Posición inicial aleatoria
+                        const startPositionX = Math.random() * 100;
+                        flower.style.left = `${startPositionX}vw`;
+                        
+                        // Color aleatorio entre tonos de púrpura
+                        const hue = Math.floor(Math.random() * 60) + 260; // 260-320 (púrpuras)
+                        const lightness = Math.floor(Math.random() * 20) + 60; // 60-80%
+                        flower.style.backgroundImage = `radial-gradient(circle, hsl(${hue}, 70%, ${lightness}%) 10%, transparent 70%)`;
+                        
+                        // Duración aleatoria de caída
+                        const fallDuration = Math.random() * 15 + 10;
+                        flower.style.animation = `fall ${fallDuration}s linear forwards`;
+                        
+                        container.appendChild(flower);
+                        
+                        // Eliminar la flor después de que termine la animación
+                        setTimeout(() => {
+                            container.removeChild(flower);
+                        }, fallDuration * 1000);
+                    }, i * 300);
+                }
+                
+                // Recrear flores después de un tiempo
+                setTimeout(createFlowers, flowerCount * 300);
+            }
+            
+            // Iniciar creación de flores
+            createFlowers();
+            
+            // Transiciones entre frases
+            const phrases = document.querySelectorAll('.phrase');
+            const coverContainer = document.getElementById('coverContainer');
+            const readButton = document.getElementById('readButton');
+            const revealEffect = document.getElementById('revealEffect');
+            const revealSound = document.getElementById('revealSound');
+            const phraseContainer = document.querySelector('.phrase-container');
+            let currentPhrase = 0;
+            
+            // Mostrar primera frase
+            setTimeout(() => {
+                phrases[0].classList.add('entering');
+            }, 1500);
+            
+            function nextPhrase() {
+                // Iniciar animación de salida para la frase actual
+                phrases[currentPhrase].classList.remove('entering');
+                phrases[currentPhrase].classList.add('exiting');
+                
+                // Esperar a que termine la animación de salida
+                setTimeout(() => {
+                    phrases[currentPhrase].classList.remove('exiting');
+                    
+                    // Pasar a la siguiente frase
+                    currentPhrase++;
+                    
+                    // Si hemos mostrado todas las frases, mostrar la portada
+                    if (currentPhrase >= phrases.length) {
+                        revealCover();
+                        return;
+                    }
+                    
+                    // Mostrar la siguiente frase con animación de entrada
+                    phrases[currentPhrase].classList.add('entering');
+                    
+                    // Programar la siguiente transición
+                    setTimeout(nextPhrase, 4000); // Mostrar cada frase por 4 segundos
+                }, 2000); // Duración de la animación de salida
+            }
+            
+            // Función para revelar la portada con efectos especiales
+            function revealCover() {
+                // Ocultar el contenedor de frases
+                phraseContainer.style.display = 'none';
+                
+                // Activar efecto de flash
+                revealEffect.classList.add('active');
+                
+                // Crear partículas especiales para el reveal
+                createRevealParticles();
+                
+                // Mostrar la portada con su animación
+                setTimeout(() => {
+                    coverContainer.classList.add('visible');
+                    readButton.classList.add('visible');
+                    
+                    // Reproducir el sonido de revelación
+                    if (revealSound.getAttribute('src')) {
+                        revealSound.play().catch(e => {
+                            console.log('Auto-play prevented: ' + e);
+                            // Podemos añadir un botón para reproducir el sonido si auto-play está bloqueado
+                        });
+                    }
+                }, 1000);
+            }
+            
+            // Crear partículas especiales para el momento de la revelación
+            function createRevealParticles() {
+                const particleCount = 15;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('special-particle');
+                    
+                    // Posición aleatoria
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    particle.style.left = `${posX}%`;
+                    particle.style.top = `${posY}%`;
+                    
+                    // Color aleatorio entre tonos de púrpura
+                    const hue = Math.floor(Math.random() * 60) + 260;
+                    particle.style.backgroundColor = `hsl(${hue}, 70%, 70%)`;
+                    
+                    // Agregar al DOM
+                    document.body.appendChild(particle);
+                    
+                    // Aplicar animación con delay
+                    setTimeout(() => {
+                        particle.style.animation = `particleExplode ${Math.random() * 2 + 2}s forwards`;
+                        
+                        // Eliminar después de la animación
+                        setTimeout(() => {
+                            document.body.removeChild(particle);
+                        }, 3000);
+                    }, Math.random() * 2000);
+                }
+            }
+            
+            // Iniciar secuencia después de 3 segundos
+            setTimeout(nextPhrase, 4000);
+        });
+    </script>
+</body>
+</html>
